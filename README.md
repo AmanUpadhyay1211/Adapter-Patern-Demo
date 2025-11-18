@@ -1,73 +1,16 @@
-# React + TypeScript + Vite
+# Students Table – Cache First Demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## How to Run
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm i
+npm start
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The first command installs all dependencies. The second command boots Vite in dev mode, opens the React single page app, and wires up Redux, Dexie (IndexedDB), and the mock API.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Architecture Overview
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+The data layer follows the Adapter pattern so the UI stays ignorant about where student rows originate. `StudentRepository` is the single entry point the rest of the app talks to. Internally it holds two adapters: `IndexedDBAdapter` for the cache and `HttpAdapter` for the mock backend. Because each adapter exposes a tiny contract (`getAll`, `addMany`, `fetchStudents`, etc.), it is trivial to swap persistence or network implementations later without touching UI or Redux code.
+
+The repository implements the cache-first flow: load from IndexedDB, dispatch the cached payload to Redux immediately, then trigger `refreshInBackground`. That method speaks only to the adapters, replaces the IndexedDB contents, and emits an `updateStudents` action when fresh data is in. If the HTTP call dies the repository catches the error, keeps whatever was already cached, and the UI continues to show consistent state. This small adapter layer gives us a clean separation of concerns while still keeping the codebase approachable.
