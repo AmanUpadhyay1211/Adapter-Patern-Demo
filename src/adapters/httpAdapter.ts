@@ -20,7 +20,8 @@ export class HttpAdapter {
   }
 
   async updateStudent(id: string, payload: Partial<Student>): Promise<Student> {
-    const response = await fetch(buildUrl(`/students/${id}`), {
+    console.log("Updating student", id, payload, buildUrl(`/api/students/${id}`));
+    const response = await fetch(buildUrl(`/api/students/${id}`), {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
