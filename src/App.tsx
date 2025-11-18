@@ -34,7 +34,7 @@ function App() {
   // Handle refresh
   const handleRefresh = () => {
     console.log("🔄 [App] Refresh button clicked");
-    repositoryRef.current.loadStudents();
+    repositoryRef.current.refreshInBackground();
   };
 
   // Filter and sort students

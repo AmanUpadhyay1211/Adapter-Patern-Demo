@@ -66,7 +66,7 @@ export class StudentRepository {
   /**
    * Background refresh: Fetch fresh data and update cache + Redux
    */
-  private async refreshInBackground() {
+  public async refreshInBackground() {
     console.log("🔄 [StudentRepository] refreshInBackground() started");
     try {
       console.log("🔄 [StudentRepository] Setting refreshing to true");
