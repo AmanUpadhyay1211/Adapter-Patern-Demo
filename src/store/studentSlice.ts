@@ -50,5 +50,10 @@ export const {
   setError,
 } = studentSlice.actions;
 
+// Selectors
+export const selectStudentList = (state: { student: StudentState }) => state.student.studentArray;
+export const selectIsLoading = (state: { student: StudentState }) => state.student.isLoading;
+export const selectIsRefreshing = (state: { student: StudentState }) => state.student.isRefreshing;
+export const selectError = (state: { student: StudentState }) => state.student.error;
 
 export default studentSlice.reducer;
