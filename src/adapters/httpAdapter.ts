@@ -1,18 +1,39 @@
 import type { Student } from "../types";
-import { getStudents } from "../api/student";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
+
+function buildUrl(path: string) {
+  console.log("API_BASE_URL", API_BASE_URL);
+  const normalizedBase = API_BASE_URL.endsWith("/")
+    ? API_BASE_URL.slice(0, -1)
+    : API_BASE_URL;
+  return `${normalizedBase}${path}`;
+}
 
 export class HttpAdapter {
-
   async fetchStudents(): Promise<Student[]> {
-    // Simulate network delay (300-1300ms)
-    await new Promise(r => setTimeout(r, Math.random() * 1000 + 300));
-    
-    // Simulate network failure 10% of the time (for testing offline behavior)
-    if (Math.random() < 0.1) {
-      throw new Error("Network error: Failed to fetch students");
+    const response = await fetch(buildUrl("/api/students"));
+    if (!response.ok) {
+      throw new Error("Failed to fetch students");
+    }
+    return response.json();
+  }
+
+  async updateStudent(id: string, payload: Partial<Student>): Promise<Student> {
+    const response = await fetch(buildUrl(`/students/${id}`), {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      const message = errorBody?.message ?? "Failed to update student";
+      throw new Error(message);
     }
 
-    //Using mock api in real world this would  be like something like const res = await fetch("/api/students");
-    return getStudents();
+    return response.json();
   }
 }

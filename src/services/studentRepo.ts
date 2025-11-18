@@ -2,7 +2,7 @@ import { HttpAdapter } from "../adapters/httpAdapter";
 import { IndexedDBAdapter } from "../adapters/indexedDb";
 import type { Student } from "../types";
 import { store } from "../store/store";
-import { setStudents, updateStudents, setLoading, setRefreshing, setError } from "../store/studentSlice";
+import { setStudents, updateStudents, setLoading, setRefreshing, setError, upsertStudent } from "../store/studentSlice";
 
 export class StudentRepository {
   private dbAdapter = new IndexedDBAdapter();
@@ -74,6 +74,25 @@ export class StudentRepository {
       console.error("❌ Background refresh failed (using cached data):", err);
       store.dispatch(setRefreshing(false));
       // Don't throw - app continues with cached data
+    }
+  }
+
+  /**
+   * Update a single student and sync API + IndexedDB + Redux
+   */
+  public async updateStudent(id: string, data: Partial<Student>) {
+    try {
+      const updated = await this.http.updateStudent(id, data);
+      await this.dbAdapter.update(id, updated);
+      store.dispatch(upsertStudent(updated));
+      store.dispatch(setError(null));
+      return updated;
+    } catch (err) {
+      console.error(`❌ Failed to update student ${id}:`, err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update student";
+      store.dispatch(setError(errorMessage));
+      throw err;
     }
   }
 }

@@ -8,9 +8,12 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+backend/node_modules
 dist
+backend/dist
 dist-ssr
 *.local
+backend/data/*.sqlite
 
 # Editor directories and files
 .vscode/*
@@ -24,3 +27,5 @@ dist-ssr
 *.sw?
 tests/
 tests/*.test.ts
+.env
+dist/

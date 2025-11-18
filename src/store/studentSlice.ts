@@ -27,6 +27,7 @@ const studentSlice = createSlice({
     updateStudents: (state, action: PayloadAction<Student[]>) => {
       state.studentArray = action.payload;
       state.isRefreshing = false;
+      state.error = null;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
@@ -34,7 +35,17 @@ const studentSlice = createSlice({
     setRefreshing: (state, action: PayloadAction<boolean>) => {
       state.isRefreshing = action.payload;
     },
-    setError: (state, action: PayloadAction<string>) => {
+    upsertStudent: (state, action: PayloadAction<Student>) => {
+      const idx = state.studentArray.findIndex(
+        (student) => student.id === action.payload.id
+      );
+      if (idx >= 0) {
+        state.studentArray[idx] = action.payload;
+      } else {
+        state.studentArray.push(action.payload);
+      }
+    },
+    setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
       state.isLoading = false;
       state.isRefreshing = false;
@@ -45,6 +56,7 @@ const studentSlice = createSlice({
 export const {
   setStudents,
   updateStudents,
+  upsertStudent,
   setLoading,
   setRefreshing,
   setError,
