@@ -5,6 +5,7 @@ import type { StudentAttributes } from "../types/student";
 const router = Router();
 
 router.get("/", async (_req, res) => {
+  console.log("Fetching students... For route /api/students");
   try {
     const students = await listStudents();
     res.json(students);
@@ -15,6 +16,7 @@ router.get("/", async (_req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
+  console.log("Updating student... For route /api/students/:id");
   const { id } = req.params;
   const payload = req.body as Partial<StudentAttributes>;
 
