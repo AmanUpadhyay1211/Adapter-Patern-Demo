@@ -1,0 +1,76 @@
+import { HttpAdapter } from "../adapters/httpAdapter";
+import { IndexedDBAdapter } from "../adapters/indexedDb";
+import type { Student } from "../types";
+import { store } from "../store/store";
+import { setStudents, updateStudents, setLoading, setRefreshing, setError } from "../store/studentSlice";
+
+export class StudentRepository {
+  private dbAdapter = new IndexedDBAdapter();
+  private http = new HttpAdapter();
+
+  /**
+   * Load students with cache-first strategy:
+   * 1. Load from IndexedDB (cache)
+   * 2. Update Redux store immediately
+   * 3. Fetch fresh data in background
+   * 4. Update IndexedDB and Redux if new data arrives
+   */
+  async loadStudents(): Promise<Student[]> {
+    try {
+      store.dispatch(setLoading(true));
+      
+      // Step 1: Load from cache (IndexedDB)
+      const cached = await this.dbAdapter.getAll();
+
+      // Step 2: Show cached data immediately
+      if (cached.length > 0) {
+        store.dispatch(setStudents(cached));
+        store.dispatch(setLoading(false));
+        
+        // Step 3: Refresh in background (don't await)
+        this.refreshInBackground();
+        return cached;
+      }
+
+      // Step 4: No cache, fetch from server
+      const fresh = await this.http.fetchStudents();
+      await this.dbAdapter.addMany(fresh);
+      store.dispatch(setStudents(fresh));
+      store.dispatch(setLoading(false));
+      return fresh;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to load students";
+      store.dispatch(setError(errorMessage));
+      
+      // Fallback to cache even on error
+      const cached = await this.dbAdapter.getAll();
+      if (cached.length > 0) {
+        store.dispatch(setStudents(cached));
+      }
+      return cached;
+    }
+  }
+
+  /**
+   * Background refresh: Fetch fresh data and update cache + Redux
+   */
+  private async refreshInBackground() {
+    try {
+      store.dispatch(setRefreshing(true));
+      const fresh = await this.http.fetchStudents();
+      
+      // Update IndexedDB
+      await this.dbAdapter.clear();
+      await this.dbAdapter.addMany(fresh);
+      
+      // Update Redux store
+      store.dispatch(updateStudents(fresh));
+      store.dispatch(setRefreshing(false));
+    } catch (err) {
+      // Silently fail - we already have cached data showing
+      console.log("Background refresh failed (using cached data):", err);
+      store.dispatch(setRefreshing(false));
+      // Don't throw - app continues with cached data
+    }
+  }
+}

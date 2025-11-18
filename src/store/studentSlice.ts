@@ -50,4 +50,5 @@ export const {
   setError,
 } = studentSlice.actions;
 
+
 export default studentSlice.reducer;
