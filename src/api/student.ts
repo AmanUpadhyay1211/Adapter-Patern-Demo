@@ -1,0 +1,152 @@
+import type { Student } from '../types';
+
+const mockStudents: Student[] = [
+    {
+      "id": "S001",
+      "rollNumber": "2024001",
+      "name": "Aarav Sharma",
+      "bloodGroup": "O+",
+      "class": "10",
+      "section": "A",
+      "phone": "+91 9876543210",
+      "email": "aarav.sharma@school.edu",
+      "attendance": 95,
+      "lastUpdated": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": "S002",
+      "rollNumber": "2024002",
+      "name": "Priya Patel",
+      "bloodGroup": "A+",
+      "class": "10",
+      "section": "A",
+      "phone": "+91 9876543211",
+      "email": "priya.patel@school.edu",
+      "attendance": 92,
+      "lastUpdated": "2024-01-15T10:31:00Z"
+    },
+    {
+      "id": "S003",
+      "rollNumber": "2024003",
+      "name": "Rohan Gupta",
+      "bloodGroup": "B+",
+      "class": "10",
+      "section": "B",
+      "phone": "+91 9876543212",
+      "email": "rohan.gupta@school.edu",
+      "attendance": 88,
+      "lastUpdated": "2024-01-15T10:32:00Z"
+    },
+    {
+      "id": "S004",
+      "rollNumber": "2024004",
+      "name": "Ananya Singh",
+      "bloodGroup": "AB+",
+      "class": "10",
+      "section": "B",
+      "phone": "+91 9876543213",
+      "email": "ananya.singh@school.edu",
+      "attendance": 97,
+      "lastUpdated": "2024-01-15T10:33:00Z"
+    },
+    {
+      "id": "S005",
+      "rollNumber": "2024005",
+      "name": "Vikram Reddy",
+      "bloodGroup": "O-",
+      "class": "11",
+      "section": "A",
+      "phone": "+91 9876543214",
+      "email": "vikram.reddy@school.edu",
+      "attendance": 90,
+      "lastUpdated": "2024-01-15T10:34:00Z"
+    },
+    {
+      "id": "S006",
+      "rollNumber": "2024006",
+      "name": "Ishita Verma",
+      "bloodGroup": "A-",
+      "class": "11",
+      "section": "A",
+      "phone": "+91 9876543215",
+      "email": "ishita.verma@school.edu",
+      "attendance": 94,
+      "lastUpdated": "2024-01-15T10:35:00Z"
+    },
+    {
+      "id": "S007",
+      "rollNumber": "2024007",
+      "name": "Arjun Kumar",
+      "bloodGroup": "B-",
+      "class": "11",
+      "section": "B",
+      "phone": "+91 9876543216",
+      "email": "arjun.kumar@school.edu",
+      "attendance": 85,
+      "lastUpdated": "2024-01-15T10:36:00Z"
+    },
+    {
+      "id": "S008",
+      "rollNumber": "2024008",
+      "name": "Kavya Nair",
+      "bloodGroup": "O+",
+      "class": "11",
+      "section": "B",
+      "phone": "+91 9876543217",
+      "email": "kavya.nair@school.edu",
+      "attendance": 96,
+      "lastUpdated": "2024-01-15T10:37:00Z"
+    },
+    {
+      "id": "S009",
+      "rollNumber": "2024009",
+      "name": "Aditya Joshi",
+      "bloodGroup": "AB-",
+      "class": "12",
+      "section": "A",
+      "phone": "+91 9876543218",
+      "email": "aditya.joshi@school.edu",
+      "attendance": 89,
+      "lastUpdated": "2024-01-15T10:38:00Z"
+    },
+    {
+      "id": "S010",
+      "rollNumber": "2024010",
+      "name": "Meera Kapoor",
+      "bloodGroup": "A+",
+      "class": "12",
+      "section": "A",
+      "phone": "+91 9876543219",
+      "email": "meera.kapoor@school.edu",
+      "attendance": 93,
+      "lastUpdated": "2024-01-15T10:39:00Z"
+    },
+    {
+      "id": "S011",
+      "rollNumber": "2024011",
+      "name": "Siddharth Mehta",
+      "bloodGroup": "B+",
+      "class": "12",
+      "section": "B",
+      "phone": "+91 9876543220",
+      "email": "siddharth.mehta@school.edu",
+      "attendance": 91,
+      "lastUpdated": "2024-01-15T10:40:00Z"
+    },
+    {
+      "id": "S012",
+      "rollNumber": "2024012",
+      "name": "Diya Malhotra",
+      "bloodGroup": "O+",
+      "class": "12",
+      "section": "B",
+      "phone": "+91 9876543221",
+      "email": "diya.malhotra@school.edu",
+      "attendance": 98,
+      "lastUpdated": "2024-01-15T10:41:00Z"
+    }
+  ]
+
+export const getStudents = (): Student[] => {
+    return mockStudents;
+}
