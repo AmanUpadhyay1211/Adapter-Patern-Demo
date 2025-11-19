@@ -2,6 +2,7 @@ import { Op } from "sequelize";
 import { Student } from "../models/student";
 import type { StudentAttributes } from "../types/student";
 import { seedStudents } from "../seed/students";
+import { incrementGlobalVersion } from "./versionService";
 
 export async function ensureSeedData() {
   const count = await Student.count();
@@ -28,6 +29,10 @@ export async function updateStudent(id: string, changes: Partial<StudentAttribut
   };
 
   await student.update(nextValues);
+  
+  // Increment global version after successful update
+  await incrementGlobalVersion();
+  
   return student;
 }
 
