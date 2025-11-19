@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import type { EditableStudentField, Student } from "../../types";
 import { Footer } from "../Footer";
 
@@ -70,14 +70,20 @@ function EditableCell({
 }: EditableCellProps) {
   const [localValue, setLocalValue] = useState(value.toString());
   const [dirty, setDirty] = useState(false);
+  const displayValue = dirty ? localValue : value.toString();
 
+  // Reset local state when value prop changes externally and input is not dirty
+  // This handles real-time updates from socket events
   useEffect(() => {
-    setLocalValue(value.toString());
-    setDirty(false);
+    if (!dirty) {
+      setLocalValue(value.toString());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   const handleBlur = () => {
     if (!dirty || localValue === value.toString()) {
+      setDirty(false);
       return;
     }
 
@@ -89,7 +95,7 @@ function EditableCell({
     <div className="flex items-center gap-2">
       <input
         type={inputType}
-        value={localValue}
+        value={displayValue}
         onChange={(event) => {
           setLocalValue(event.target.value);
           setDirty(true);

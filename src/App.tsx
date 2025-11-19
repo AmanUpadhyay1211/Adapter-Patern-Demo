@@ -2,13 +2,17 @@ import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./App.css";
 import { StudentRepository } from "./services/studentRepo";
+import { socketService } from "./services/socketService";
 import {
   selectStudentList,
   selectIsLoading,
   selectIsRefreshing,
   selectError,
   setError,
+  upsertStudent,
+  setGlobalVersion,
 } from "./store/studentSlice";
+import { IndexedDBAdapter } from "./adapters/indexedDb";
 import type { EditableStudentField, Student } from "./types";
 import { MainContainer } from "./components/MainContainer";
 import { Header } from "./components/Header";
@@ -17,6 +21,7 @@ import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 
 function App() {
   const repositoryRef = useRef(new StudentRepository());
+  const dbAdapterRef = useRef(new IndexedDBAdapter());
   const dispatch = useDispatch();
   const students = useSelector(selectStudentList);
   const isLoading = useSelector(selectIsLoading);
@@ -33,6 +38,31 @@ function App() {
   useEffect(() => {
     repositoryRef.current.loadStudents();
   }, []);
+
+  // Set up socket connection and listen for real-time updates
+  useEffect(() => {
+    const socket = socketService.connect();
+
+    socketService.onStudentUpdated(async (event) => {
+      console.log("📡 Received real-time update:", event);
+      
+      // Update IndexedDB
+      await dbAdapterRef.current.update(event.student.id, event.student);
+      
+      // Update Redux store
+      dispatch(upsertStudent(event.student));
+      
+      // Update global version
+      if (event.globalVersion !== undefined) {
+        dispatch(setGlobalVersion(event.globalVersion));
+      }
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socketService.disconnect();
+    };
+  }, [dispatch]);
 
   // Handle refresh
   const handleRefresh = () => {
