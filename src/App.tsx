@@ -41,7 +41,7 @@ function App() {
 
   // Set up socket connection and listen for real-time updates
   useEffect(() => {
-    const socket = socketService.connect();
+    socketService.connect();
 
     socketService.onStudentUpdated(async (event) => {
       console.log("📡 Received real-time update:", event);
@@ -111,7 +111,8 @@ function App() {
   ) => {
     setCellStatuses((prev) => {
       if (!status) {
-        const { [key]: _removed, ...rest } = prev;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [key]: _, ...rest } = prev;
         return rest;
       }
       return { ...prev, [key]: status };
